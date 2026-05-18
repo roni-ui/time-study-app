@@ -24,7 +24,7 @@ def init_connection():
     try:
         # Jika berjalan di Streamlit Cloud (membaca dari brankas rahasia)
         if "google_sheets_creds" in st.secrets:
-            creds_dict = json.loads(st.secrets["google_sheets_creds"])
+            creds_dict = st.secrets["google_sheets_creds"]
             creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         # Jika berjalan di laptop (membaca file json)
         else:
