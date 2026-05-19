@@ -110,18 +110,19 @@ with tab1:
                 
                 if sheet:
                     try:
-                        # Siapkan baris data (Gunakan titik koma karena regional Indonesia)
-                        format_durasi_id = str(round(durasi_lap_ini, 2)).replace('.', ',')
+                        # Kirimkan murni sebagai angka (float), biarkan Google Sheets yang mengatur komanya
+                        durasi_angka = round(durasi_lap_ini, 2)
                         row_data = [
                             nama_operator, 
                             posisi_kerja, 
                             regu, 
                             f"Lap {st.session_state.nomor_lap}", 
-                            format_durasi_id, 
+                            durasi_angka, 
                             st.session_state.id_sesi_waktu, 
                             keterangan
                         ]
-                        sheet.append_row(row_data)
+                        # Tambahkan 'USER_ENTERED' agar Google Sheets membacanya sebagai angka kalkulator
+                        sheet.append_row(row_data, value_input_option='USER_ENTERED')
                         st.toast(f"✅ Lap {st.session_state.nomor_lap} Berhasil Disimpan!", icon="💾")
                         
                         # Perbarui penanda lap selanjutnya
