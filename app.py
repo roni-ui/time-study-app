@@ -41,6 +41,8 @@ if 'nomor_lap' not in st.session_state:
     st.session_state.nomor_lap = 1
 if 'id_sesi_waktu' not in st.session_state:
     st.session_state.id_sesi_waktu = ""
+if 'clear_form' not in st.session_state:
+    st.session_state.clear_form = False
 # ARRAY UNTUK MENYIMPAN DATA LAP SEMENTARA (Belum masuk database)
 if 'lap_data' not in st.session_state:
     st.session_state.lap_data = []
@@ -63,6 +65,19 @@ tab1, tab2 = st.tabs(["🎮 Observasi Lapangan", "📊 Mini Insight"])
 with tab1:
     # Form input dikunci jika sedang berjalan atau jeda, agar data tidak berubah di tengah jalan
     is_running = st.session_state.status_waktu in ['berjalan', 'jeda']
+
+    # --- PENANGKAP SINYAL RESET FORM ---
+    if st.session_state.clear_form:
+        st.session_state.input_nama = ""
+        st.session_state.input_lama = ""
+        st.session_state.input_regu = "Shift 1"
+        st.session_state.input_posisi = ""
+        st.session_state.input_ket = ""
+        st.session_state.clear_form = False # Matikan sinyal setelah dibersihkan
+        
+    col_input1, col_input2 = st.columns(2)
+    with col_input1:
+        nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Operator", disabled=is_running, key="input_nama")
     
     col_input1, col_input2 = st.columns(2)
         with col_input1:
@@ -193,12 +208,8 @@ with tab1:
                     st.session_state.waktu_lap_lalu = 0.0      # Reset penanda lap
                     st.session_state.nomor_lap = 1            # Kembalikan hitungan ke Lap 1
 
-                    # --- TAMBAHAN: PAKSA FORM ISIAN KEMBALI KOSONG / DEFAULT ---
-                    st.session_state.input_nama = ""         # Kembali ke default
-                    st.session_state.input_lama = ""                # Kosongkan lagi
-                    st.session_state.input_regu = ""         # Kembali ke Shift 1
-                    st.session_state.input_posisi = "" # Kembali ke default posisi
-                    st.session_state.input_ket = ""               # Kosongkan keterangan
+                    # Nyalakan sinyal agar form dibersihkan saat aplikasi me-refresh
+                    st.session_state.clear_form = True
                     
                     time.sleep(1) # Jeda 1 detik agar operator sempat melihat pesan sukses
                     st.rerun()    # Refresh aplikasi dengan wajah baru yang segar
