@@ -186,10 +186,15 @@ with tab1:
                     sheet.append_rows(rows_to_insert, value_input_option='USER_ENTERED')
                     st.success("✅ Semua data Lap berhasil direkam ke Google Sheets!")
                     
-                    # Bersihkan tabel sementara setelah disimpan
-                    st.session_state.lap_data = [] 
-                    time.sleep(1) # Jeda sebentar biar pesannya terbaca
-                    st.rerun()
+                    # --- PROSES AUTOMATIC RESET KE TAMPILAN AWAL ---
+                    st.session_state.lap_data = []            # Kosongkan tabel riwayat lap
+                    st.session_state.status_waktu = 'awal'     # Kembalikan tombol ke Lap & Start
+                    st.session_state.total_durasi_lalu = 0.0   # Kembalikan stopwatch ke 00:00:00
+                    st.session_state.waktu_lap_lalu = 0.0      # Reset penanda lap
+                    st.session_state.nomor_lap = 1            # Kembalikan hitungan ke Lap 1
+                    
+                    time.sleep(1) # Jeda 1 detik agar operator sempat melihat pesan sukses
+                    st.rerun()    # Refresh aplikasi dengan wajah baru yang segar
                 except Exception as e:
                     st.error(f"Gagal simpan data: {e}")
             else:
