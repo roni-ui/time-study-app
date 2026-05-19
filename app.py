@@ -41,11 +41,12 @@ if 'nomor_lap' not in st.session_state:
     st.session_state.nomor_lap = 1
 if 'id_sesi_waktu' not in st.session_state:
     st.session_state.id_sesi_waktu = ""
-if 'clear_form' not in st.session_state:
-    st.session_state.clear_form = False
-# ARRAY UNTUK MENYIMPAN DATA LAP SEMENTARA (Belum masuk database)
 if 'lap_data' not in st.session_state:
     st.session_state.lap_data = []
+
+# KUNCI RAHASIA UNTUK MERESET FORM (Ganti Kunci)
+if 'reset_key' not in st.session_state:
+    st.session_state.reset_key = 0
 
 # --- FUNGSI FORMAT WAKTU (MM:SS.ms) ---
 def format_waktu(durasi_detik):
@@ -63,30 +64,17 @@ tab1, tab2 = st.tabs(["🎮 Observasi Lapangan", "📊 Mini Insight"])
 
 # --- TAB 1: OBSERVASI LAPANGAN ---
 with tab1:
-    # Form input dikunci jika sedang berjalan atau jeda, agar data tidak berubah di tengah jalan
     is_running = st.session_state.status_waktu in ['berjalan', 'jeda']
-
-    # --- PENANGKAP SINYAL RESET FORM ---
-    if st.session_state.clear_form:
-        st.session_state.input_nama = ""
-        st.session_state.input_lama = ""
-        st.session_state.input_regu = "Shift 1"
-        st.session_state.input_posisi = ""
-        st.session_state.input_ket = ""
-        st.session_state.clear_form = False # Matikan sinyal setelah dibersihkan
-        
+    
+    # KITA PASANG RESET KEY DI SETIAP INPUT
     col_input1, col_input2 = st.columns(2)
     with col_input1:
-        nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Operator", disabled=is_running, key="input_nama")
-    
-    col_input1, col_input2 = st.columns(2)
-        with col_input1:
-            nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Operator", disabled=is_running, key="input_nama")
-            lama_bekerja = st.text_input("Lama Bekerja", placeholder="Misal: 2 Tahun", disabled=is_running, key="input_lama")
-            regu = st.selectbox("Regu / Shift", ["Shift 1", "Shift 2", "Shift 3"], disabled=is_running, key="input_regu")
-        with col_input2:
-            posisi_kerja = st.text_input("Posisi Kerja", placeholder="Misal : Helper Packing IB", disabled=is_running, key="input_posisi")
-            keterangan = st.text_input("Keterangan", placeholder="Misal: Material delay", disabled=is_running, key="input_ket")
+        nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Operator", disabled=is_running, key=f"nama_{st.session_state.reset_key}")
+        lama_bekerja = st.text_input("Lama Bekerja", placeholder="Misal: 2 Tahun", disabled=is_running, key=f"lama_{st.session_state.reset_key}")
+        regu = st.selectbox("Regu / Shift", ["Shift 1", "Shift 2", "Shift 3"], disabled=is_running, key=f"regu_{st.session_state.reset_key}")
+    with col_input2:
+        posisi_kerja = st.text_input("Posisi Kerja", placeholder="Misal : Helper Packing IB", disabled=is_running, key=f"posisi_{st.session_state.reset_key}")
+        keterangan = st.text_input("Keterangan", placeholder="Misal: Material delay", disabled=is_running, key=f"ket_{st.session_state.reset_key}")
 
     st.markdown("---")
 
@@ -115,7 +103,7 @@ with tab1:
                 st.session_state.total_durasi_lalu = 0.0
                 st.session_state.nomor_lap = 1
                 st.session_state.id_sesi_waktu = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                st.session_state.lap_data = [] # Kosongkan data lap sebelumnya saat start baru
+                st.session_state.lap_data = [] 
                 st.rerun()
 
     # KONDISI 2: STATUS BERJALAN
@@ -124,8 +112,6 @@ with tab1:
             if st.button("Lap", use_container_width=True):
                 durasi_lap_ini = durasi_sekarang - st.session_state.waktu_lap_lalu
                 
-                # Simpan ke state sementara (Bukan ke Google Sheets)
-                # insert(0) agar data terbaru selalu berada di baris paling atas tabel
                 st.session_state.lap_data.insert(0, {
                     "Lap": f"{st.session_state.nomor_lap:02d}",
                     "Lap times": format_waktu(durasi_lap_ini),
@@ -138,15 +124,11 @@ with tab1:
                     "keterangan": keterangan
                 })
                 
-                # Perbarui penanda
                 st.session_state.waktu_lap_lalu = durasi_sekarang
                 st.session_state.nomor_lap += 1
                 st.rerun()
                 
         with col_btn2:
-            # Tombol Stop warna merah
-            # st.markdown("""<style>div.stButton > button:first-child {background-color: #FF4B4B; color: white; border: None;}</style>""", unsafe_allow_html=True)
-            #if st.button("Stop", use_container_width=True):
             if st.button("Stop", type="primary", use_container_width=True):
                 st.session_state.status_waktu = 'jeda'
                 st.session_state.total_durasi_lalu = durasi_sekarang
@@ -160,35 +142,31 @@ with tab1:
                 st.session_state.total_durasi_lalu = 0.0
                 st.session_state.waktu_lap_lalu = 0.0
                 st.session_state.nomor_lap = 1
-                # (Catatan: Data sementara tetap tersimpan di bawah agar bisa disave kalau lupa)
                 st.rerun()
         with col_btn2:
-            # Tombol Resume biru
             if st.button("Resume", type="primary", use_container_width=True):
                 st.session_state.status_waktu = 'berjalan'
                 st.session_state.waktu_mulai = time.time()
                 st.rerun()
 
-    # --- MENAMPILKAN TABEL RIWAYAT LAP (Seperti Referensi Gambar) ---
+    # --- MENAMPILKAN TABEL RIWAYAT LAP ---
     if len(st.session_state.lap_data) > 0:
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Buat dataframe khusus untuk tampilan estetis
         df_display = pd.DataFrame(st.session_state.lap_data)[["Lap", "Lap times", "Overall time"]]
         st.dataframe(df_display, hide_index=True, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # --- TOMBOL SIMPAN MASSAL (Tampil jika ada data) ---
+        # --- TOMBOL SIMPAN MASSAL ---
         if st.button("💾 SIMPAN SEMUA DATA KE DATABASE", type="primary", use_container_width=True):
             if sheet:
                 try:
                     rows_to_insert = []
-                    # Kita balikkan datanya (reversed) agar urutan masuk ke Sheets dari Lap 1, Lap 2, dst.
                     for lap in reversed(st.session_state.lap_data):
                         rows_to_insert.append([
                             lap["nama"],
-                            lap["lama"],     # Data baru: Lama Bekerja
+                            lap["lama"],
                             lap["posisi"],
                             lap["regu"],
                             f"Lap {int(lap['Lap'])}",
@@ -197,22 +175,21 @@ with tab1:
                             lap["keterangan"]
                         ])
                     
-                    # Kirim semua baris sekaligus dalam 1 detik!
                     sheet.append_rows(rows_to_insert, value_input_option='USER_ENTERED')
                     st.success("✅ Semua data Lap berhasil direkam ke Google Sheets!")
                     
-                    # --- PROSES AUTOMATIC RESET KE TAMPILAN AWAL ---
-                    st.session_state.lap_data = []            # Kosongkan tabel riwayat lap
-                    st.session_state.status_waktu = 'awal'     # Kembalikan tombol ke Lap & Start
-                    st.session_state.total_durasi_lalu = 0.0   # Kembalikan stopwatch ke 00:00:00
-                    st.session_state.waktu_lap_lalu = 0.0      # Reset penanda lap
-                    st.session_state.nomor_lap = 1            # Kembalikan hitungan ke Lap 1
-
-                    # Nyalakan sinyal agar form dibersihkan saat aplikasi me-refresh
-                    st.session_state.clear_form = True
+                    # --- PROSES AUTOMATIC RESET ---
+                    st.session_state.lap_data = []            
+                    st.session_state.status_waktu = 'awal'     
+                    st.session_state.total_durasi_lalu = 0.0   
+                    st.session_state.waktu_lap_lalu = 0.0      
+                    st.session_state.nomor_lap = 1            
                     
-                    time.sleep(1) # Jeda 1 detik agar operator sempat melihat pesan sukses
-                    st.rerun()    # Refresh aplikasi dengan wajah baru yang segar
+                    # MAGIS RESET FORM: Cukup ganti angkanya agar Streamlit membuat kotak baru yang bersih!
+                    st.session_state.reset_key += 1
+                    
+                    time.sleep(1) 
+                    st.rerun()    
                 except Exception as e:
                     st.error(f"Gagal simpan data: {e}")
             else:
