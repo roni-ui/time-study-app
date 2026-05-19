@@ -130,8 +130,9 @@ with tab1:
                 
         with col_btn2:
             # Tombol Stop warna merah
-            st.markdown("""<style>div.stButton > button:first-child {background-color: #FF4B4B; color: white; border: None;}</style>""", unsafe_allow_html=True)
-            if st.button("Stop", use_container_width=True):
+            # st.markdown("""<style>div.stButton > button:first-child {background-color: #FF4B4B; color: white; border: None;}</style>""", unsafe_allow_html=True)
+            #if st.button("Stop", use_container_width=True):
+            if st.button("Stop", type="primary", use_container_width=True):
                 st.session_state.status_waktu = 'jeda'
                 st.session_state.total_durasi_lalu = durasi_sekarang
                 st.rerun()
