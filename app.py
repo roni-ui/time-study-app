@@ -65,13 +65,13 @@ with tab1:
     is_running = st.session_state.status_waktu in ['berjalan', 'jeda']
     
     col_input1, col_input2 = st.columns(2)
-    with col_input1:
-        nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Operator", disabled=is_running)
-        lama_bekerja = st.text_input("Lama Bekerja", placeholder="Misal: 2 Tahun", disabled=is_running)
-        regu = st.selectbox("Regu / Shift", ["Shift 1", "Shift 2", "Shift 3"], disabled=is_running)
-    with col_input2:
-        posisi_kerja = st.text_input("Posisi Kerja", placeholder="Misal : Helper Packing IB", disabled=is_running)
-        keterangan = st.text_input("Keterangan", placeholder="Misal: Material delay", disabled=is_running)
+        with col_input1:
+            nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Operator", disabled=is_running, key="input_nama")
+            lama_bekerja = st.text_input("Lama Bekerja", placeholder="Misal: 2 Tahun", disabled=is_running, key="input_lama")
+            regu = st.selectbox("Regu / Shift", ["Shift 1", "Shift 2", "Shift 3"], disabled=is_running, key="input_regu")
+        with col_input2:
+            posisi_kerja = st.text_input("Posisi Kerja", placeholder="Misal : Helper Packing IB", disabled=is_running, key="input_posisi")
+            keterangan = st.text_input("Keterangan", placeholder="Misal: Material delay", disabled=is_running, key="input_ket")
 
     st.markdown("---")
 
@@ -192,6 +192,13 @@ with tab1:
                     st.session_state.total_durasi_lalu = 0.0   # Kembalikan stopwatch ke 00:00:00
                     st.session_state.waktu_lap_lalu = 0.0      # Reset penanda lap
                     st.session_state.nomor_lap = 1            # Kembalikan hitungan ke Lap 1
+
+                    # --- TAMBAHAN: PAKSA FORM ISIAN KEMBALI KOSONG / DEFAULT ---
+                    st.session_state.input_nama = placeholder="Nama Helper/Operator"          # Kembali ke default
+                    st.session_state.input_lama = placeholder="Misal: 2 Tahun"                # Kosongkan lagi
+                    st.session_state.input_regu = placeholder="Misal : Helper Packing IB"         # Kembali ke Shift 1
+                    st.session_state.input_posisi = placeholder="isal : Helper Packing IB" # Kembali ke default posisi
+                    st.session_state.input_ket = placeholder="Misal: Material delay"               # Kosongkan keterangan
                     
                     time.sleep(1) # Jeda 1 detik agar operator sempat melihat pesan sukses
                     st.rerun()    # Refresh aplikasi dengan wajah baru yang segar
