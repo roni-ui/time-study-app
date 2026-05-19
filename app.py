@@ -194,11 +194,11 @@ with tab1:
                     st.session_state.nomor_lap = 1            # Kembalikan hitungan ke Lap 1
 
                     # --- TAMBAHAN: PAKSA FORM ISIAN KEMBALI KOSONG / DEFAULT ---
-                    st.session_state.input_nama = placeholder="Nama Helper/Operator"          # Kembali ke default
-                    st.session_state.input_lama = placeholder="Misal: 2 Tahun"                # Kosongkan lagi
-                    st.session_state.input_regu = placeholder="Misal : Helper Packing IB"         # Kembali ke Shift 1
-                    st.session_state.input_posisi = placeholder="isal : Helper Packing IB" # Kembali ke default posisi
-                    st.session_state.input_ket = placeholder="Misal: Material delay"               # Kosongkan keterangan
+                    st.session_state.input_nama = ""         # Kembali ke default
+                    st.session_state.input_lama = ""                # Kosongkan lagi
+                    st.session_state.input_regu = ""         # Kembali ke Shift 1
+                    st.session_state.input_posisi = "" # Kembali ke default posisi
+                    st.session_state.input_ket = ""               # Kosongkan keterangan
                     
                     time.sleep(1) # Jeda 1 detik agar operator sempat melihat pesan sukses
                     st.rerun()    # Refresh aplikasi dengan wajah baru yang segar
