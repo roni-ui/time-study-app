@@ -59,10 +59,10 @@ with tab1:
     
     col_input1, col_input2 = st.columns(2)
     with col_input1:
-        nama_operator = st.text_input("Nama Operator", value="Ahmad", disabled=is_running)
+        nama_operator = st.text_input("Nama Operator", placeholder="Nama Helper/Opertor", disabled=is_running)
         regu = st.selectbox("Regu / Shift", ["Shift 1", "Shift 2", "Shift 3"], disabled=is_running)
     with col_input2:
-        posisi_kerja = st.text_input("Posisi Kerja", value="Packing Cokelat", disabled=is_running)
+        posisi_kerja = st.text_input("Posisi Kerja", placeholder="Misal : Helper Packing IB", disabled=is_running)
         keterangan = st.text_input("Keterangan Tambahan", placeholder="Misal: Material delay, lancar", disabled=is_running)
 
     st.markdown("---")
